@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import axios from 'axios'
 
 const Filter = ({filterString, filterChangeCallback}) => {
   return(
@@ -37,12 +38,22 @@ const Content = ({visiblePersons}) => {
 }
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567' }
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+
+  // An effect hook takes two parameters. The first parameter is a function, which React will call,
+  // when the component is rendered for the first time. The second parameter is an array of dependencies,
+  // which controls when the effect is called. If the second parameter is an empty array,
+  // then the effect is only called along with the first render of the component.
+  useEffect(() => {
+    axios
+      .get("http://localhost:3001/persons")
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
 
   const addName = (event) => {
     event.preventDefault()
