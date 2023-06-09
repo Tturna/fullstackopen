@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import DBAccess from './services/DBAccess'
 
 const Filter = ({filterString, filterChangeCallback}) => {
   return(
@@ -28,11 +28,39 @@ const AddForm = (props) => {
   )
 }
 
-const Content = ({visiblePersons}) => {
+const DeleteButton = (props) => {
+  const {name, _, id} = props.person
+  const [persons, setPersons] = props.hook
+
+  const deleteEntry = () => {
+    if (!window.confirm(`Delete ${name}?`)) return;
+
+    DBAccess.deleteEntry(id)
+      .then(() => {
+        // console.log(data)
+        setPersons(persons.filter(p => p.id !== id))
+      })
+  }
+  return(
+    <button onClick={() => deleteEntry()}>Delete</button>
+  )
+}
+
+const PersonEntry = (props) => {
+  const {name, number, _} = props.person
+
+  return(
+    <p>
+      {name} {number} <DeleteButton person={props.person} hook={props.hook} />
+    </p>
+  )
+}
+
+const Content = ({visiblePersons, hook}) => {
   return(
     <div>
       <h2>Numbers</h2>
-      {visiblePersons.map(person => <p key={person.name}>{person.name} {person.number}</p>)}
+      {visiblePersons.map(person => <PersonEntry key={person.name} person={person} hook={hook} />)}
     </div>
   )
 }
@@ -48,10 +76,9 @@ const App = () => {
   // which controls when the effect is called. If the second parameter is an empty array,
   // then the effect is only called along with the first render of the component.
   useEffect(() => {
-    axios
-      .get("http://localhost:3001/persons")
-      .then(response => {
-        setPersons(response.data)
+    DBAccess.readAll()
+      .then(data => {
+        setPersons(data)
       })
   }, [])
 
@@ -62,17 +89,26 @@ const App = () => {
       number: newNumber
     }
 
-    const result = persons.find(element => element.name === nameEntry.name)
-    if(result !== undefined) {
-      alert(`${newName} is already added to phonebook`)
-      return
+    const existing = persons.find(element => element.name === nameEntry.name)
+    if(existing !== undefined) {
+      if (!window.confirm(`${existing.name} is already added to phonebook. Replace the old number with a new one?`)) return
+
+      DBAccess.update(existing.id, nameEntry)
+        .then(data => {
+          console.log(data)
+          setPersons(persons.map(p => p.id === data.id ? data : p))
+      })
     }
-
-    setPersons(persons.concat(nameEntry))
+    else {
+      DBAccess.create(nameEntry)
+        .then(data => {
+          setPersons(persons.concat(data))
+      })
+    }
   }
-
+  
   const visiblePersons = persons.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()))
-
+  
   return (
     <div>
       <h2>Phonebook</h2>
@@ -87,7 +123,7 @@ const App = () => {
         submitFunction={addName}
       />
 
-      <Content visiblePersons={visiblePersons} />
+      <Content visiblePersons={visiblePersons} hook={[persons, setPersons]} />
 
     </div>
   )
