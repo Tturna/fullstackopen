@@ -2,14 +2,31 @@ import { useState, useEffect } from "react";
 import axios from "axios"
 
 const Results = ({results}) => {
-    if (results === null) return
+    if (results === null) return null;
+    if (results.length === 1) return results;
     return <p>{results}</p>
+}
+
+const CountryInfo = ({country}) => {
+    return(
+        <div>
+            <h1>{country.name.common}</h1>
+            <p>Capital: {country.capital[0]}</p>
+            <p>Area: {country.area}</p>
+            <br />
+            Languages:
+            <ul>
+                {Object.values(country.languages).map(l => <li>{l}</li>)}
+            </ul>
+            <img src={country.flags.png} alt={country.flags.alt} />
+        </div>
+    )
 }
 
 function App() {
     const [query, setQuery] = useState('')
     const [countries, setCountries] = useState(null)
-    const [result, setResult] = useState()
+    const [result, setResult] = useState(null)
     
     useEffect(() => {
         axios
@@ -45,7 +62,11 @@ function App() {
         }
         
         if (matches.length > 0) {
-            setResult(matches.map(country => <>{country.name.common}<br/></>))
+            if (matches.length === 1) {
+                setResult(<CountryInfo country={matches[0]} />)
+            } else {
+                setResult(matches.map(country => <>{country.name.common}<br/></>))
+            }
         }
     }
     
