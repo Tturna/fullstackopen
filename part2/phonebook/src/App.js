@@ -105,9 +105,13 @@ const App = () => {
       DBAccess.update(existing.id, nameEntry)
         .then(data => {
           // console.log(data)
-          setPersons(persons.map(p => p.id === data.id ? data : p))
-          notify([`Updated number for ${existing.name}`, false], 5000)
+          setPersons(persons.map(p => p.id === data.id ? data : p));
+          notify([`Updated number for ${existing.name}`, false], 5000);
       })
+      .catch(e => {
+        console.log(e);
+        notify([e.response.data.error, true], 5000);
+      });
     }
     else {
       DBAccess.create(nameEntry)
@@ -115,6 +119,10 @@ const App = () => {
           setPersons(persons.concat(data))
           notify([`Added ${nameEntry.name}`, false], 5000)
       })
+      .catch(e => {
+        console.log(e);
+        notify([e.response.data.error, true], 5000);
+      });
     }
   }
 
