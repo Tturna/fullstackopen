@@ -4,6 +4,7 @@ const cors = require('cors')
 const config = require('./utils/config.js')
 const logger = require('./utils/logger.js')
 const midware = require('./utils/middleware.js')
+require('express-async-errors')
 const blogsRouter = require('./controllers/blogs.js')
 const app = express()
 
