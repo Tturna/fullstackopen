@@ -12,22 +12,22 @@ const Blog = require('../models/blog.js')
 //         })
 // })
 
+// We don't need to handle errors here because we use express-async-errors
 blogsRouter.get('/', async (_request, response) => {
     const blogs = await Blog.find({})
     response.json(blogs)
 })
 
-blogsRouter.post('/', (request, response, next) => {
-    const blog = new Blog(request.body)
+blogsRouter.post('/', (request, response) => {
 
-    blog
-        .save()
-        .then(result => {
-            response.status(201).json(result)
-        })
-        .catch(e => {
-            next(e)
-        })
+    // default likes
+    if (!request.body.hasOwnProperty('likes')) {
+        request.body.likes = 0;
+    }
+
+    const blog = new Blog(request.body)
+    const result = blog.save();
+    response.status(201).json(result);
 })
 
 module.exports = blogsRouter
