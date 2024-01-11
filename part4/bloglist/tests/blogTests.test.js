@@ -25,6 +25,13 @@ beforeEach(async () => {
 
 const api = supertest(app);
 
+describe('Blog data formatting', () => {
+    test('uid is named id and not _id', async () => {
+        const response = await api.get('/api/blogs');
+        expect(response.body[0].id).toBeDefined(); 
+    });
+});
+
 describe('Getting blog data', () => {
     test('correct amount of blogs is returned as JSON', async () => {
         const response = await api
