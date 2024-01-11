@@ -104,10 +104,31 @@ describe('Deleting blog data', () => {
             .expect(204);
     });
 
-    test('Deleting with an invalid id return 400', async () => {
+    test('Deleting with an invalid id returns 400', async () => {
         await api
             .delete('/api/blogs/659ea27a7e620fbc9c17c1b4')
             .expect(400);
+        
+        await api
+            .delete('/api/blogs/321')
+            .expect(400);
+    });
+});
+
+describe('Updating blog data', () => {
+    test('Likes update with valid data', async () => {
+        const og = await api.get('/api/blogs');
+        const first = og.body[0];
+
+        await api
+            .put(`/api/blogs/${first.id}`)
+            .send({
+                likes: 99
+            })
+            .expect(200);
+        
+        const updated = await api.get('/api/blogs');
+        expect(updated.body[0].likes).toBe(99);
     });
 });
 
