@@ -27,13 +27,12 @@ const api = supertest(app);
 
 describe('Getting blog data', () => {
     test('correct amount of blogs is returned as JSON', async () => {
-        await api
+        const response = await api
             .get('/api/blogs')
             .expect(200)
             .expect('Content-Type', /application\/json/)
-            .then(response => {
-                expect(response.body).toHaveLength(initialBlogs.length);
-            });
+        
+        expect(response.body).toHaveLength(initialBlogs.length);
     });
 });
 
