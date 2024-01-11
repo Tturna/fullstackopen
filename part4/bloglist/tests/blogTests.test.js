@@ -128,6 +128,7 @@ describe('Updating blog data', () => {
             .expect(200);
         
         const updated = await api.get('/api/blogs');
+        expect(updated.body[0].title).toBe(first.title);
         expect(updated.body[0].likes).toBe(99);
     });
 });
