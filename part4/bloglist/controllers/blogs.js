@@ -20,9 +20,12 @@ blogsRouter.get('/', async (_request, response) => {
 
 blogsRouter.post('/', (request, response) => {
 
-    // default likes
     if (!request.body.hasOwnProperty('likes')) {
         request.body.likes = 0;
+    }
+
+    if (!request.body.hasOwnProperty('title') || !request.body.hasOwnProperty('url')) {
+        response.sendStatus(400);
     }
 
     const blog = new Blog(request.body)
