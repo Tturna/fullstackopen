@@ -1,7 +1,6 @@
-const jwt = require('jsonwebtoken');
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog.js');
-const User = require('../models/user.js');
+const midware = require('../utils/middleware.js');
 
 // blogsRouter.get('/', (_request, response, next) => {
 //     Blog
@@ -20,28 +19,9 @@ blogsRouter.get('/', async (_request, response) => {
     response.json(blogs);
 });
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', midware.userExtractor, async (request, response) => {
     const body = request.body;
-    const token = request.token;
-
-    if (!token) {
-        return response.status(401).json({ error: 'token missing' });
-    }
-
-    let decodedToken = undefined;
-    let error = undefined;
-    try {
-        decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-    }
-    catch (e) {
-        error = e;
-    }
-    
-    if (!decodedToken.id || error === 'SyntaxError') {
-        return response.status(401).json({ error: 'token invalid' });
-    }
-    
-    const creator = await User.findById(decodedToken.id);
+    const creator = request.user;
 
     // We're not calling hasOwnProperty directly on the body object because
     // it can be shadowed by a property with the same name.
@@ -66,33 +46,10 @@ blogsRouter.post('/', async (request, response) => {
     response.status(201).json(result);
 });
 
-blogsRouter.delete('/:id', async (request, response) => {
+blogsRouter.delete('/:id', midware.userExtractor, async (request, response) => {
     const id = request.params.id;
-    const token = request.token;
-
-    if (!token) {
-        return response.status(401).json({ error: 'token missing' });
-    }
-
-    let decodedToken = undefined;
-    let error = undefined;
-    try {
-        decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
-    }
-    catch (e) {
-        error = e;
-    }
-    
-    if (!decodedToken.id || error === 'SyntaxError') {
-        return response.status(401).json({ error: 'token invalid' });
-    }
-
-    const user = await User.findById(decodedToken.id);
+    const user = request.user;
     const targetBlog = await Blog.findById(id);
-
-    console.log(`operator: ${user.id.toString()}`);
-    console.log(`target title: ${targetBlog.title}`);
-    console.log(`target creator: ${targetBlog.creator.toString()}`);
 
     if (targetBlog.creator.toString() !== user.id.toString()) {
         return response.status(401).json({ error: 'You can only delete your own blogs' });
