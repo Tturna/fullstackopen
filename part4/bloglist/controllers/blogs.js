@@ -50,17 +50,17 @@ blogsRouter.delete('/:id', midware.userExtractor, async (request, response) => {
     const id = request.params.id;
     const user = request.user;
     const targetBlog = await Blog.findById(id);
+    
+    if (!targetBlog) {
+        return response.status(400).json({ error: 'Invalid id' });
+    }
 
     if (targetBlog.creator.toString() !== user.id.toString()) {
         return response.status(401).json({ error: 'You can only delete your own blogs' });
     }
 
-    const deleted = await Blog.findByIdAndRemove(id);
+    await Blog.findByIdAndDelete(id);
     
-    if (!deleted) {
-        return response.status(400).json({ error: 'Invalid id' });
-    }
-
     response.status(204).end();
 });
 

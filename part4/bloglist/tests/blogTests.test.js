@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
-const blog = require('../models/blog')
+const Blog = require('../models/blog');
+const User = require('../models/user');
 
 const initialBlogs = [
     {
@@ -18,14 +19,33 @@ const initialBlogs = [
     }
 ];
 
-beforeEach(async () => {
-    await blog.deleteMany({});
-    await blog.insertMany(initialBlogs);
-});
-
 const api = supertest(app);
 
+const loginTestUser = async () => {
+    await User.deleteMany({});
+
+    const testUser = {
+        username: 'Dude1',
+        password: 'badpassword123'
+    }
+
+    await api
+        .post('/api/users')
+        .send(testUser);
+    
+    const response = await api
+        .post('/api/login')
+        .send(testUser);
+    
+    return response.body.token;
+}
+
 describe('Blog data formatting', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({});
+        await Blog.insertMany(initialBlogs);
+    });
+
     test('uid is named id and not _id', async () => {
         const response = await api.get('/api/blogs');
         expect(response.body[0].id).toBeDefined(); 
@@ -33,6 +53,11 @@ describe('Blog data formatting', () => {
 });
 
 describe('Getting blog data', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({});
+        await Blog.insertMany(initialBlogs);
+    });
+
     test('correct amount of blogs is returned as JSON', async () => {
         const response = await api
             .get('/api/blogs')
@@ -43,16 +68,29 @@ describe('Getting blog data', () => {
     });
 });
 
+let token;
 describe('Adding new blog data', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({});
+        await Blog.insertMany(initialBlogs);
+        token = await loginTestUser();
+    });
+
+    afterAll(async () => {
+        await Blog.deleteMany({});
+    });
+
     test('Valid blog is added correctly', async () => {
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send({
                 title: 'The Catcher in the Rye',
                 author: 'J.D. Salinger',
                 url: 'https://www.goodreads.com/book/show/5107.The_Catcher_in_the_Rye',
                 likes: 30
-            });
+            })
+            .expect(201);
         
         const response = await api.get('/api/blogs');
         expect(response.body).toHaveLength(initialBlogs.length + 1);
@@ -64,6 +102,7 @@ describe('Adding new blog data', () => {
     test('If likes are missing from a POST request, default to 0', async () => {
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send({
                 title: 'Tristram Shandy',
                 author: 'Laurence Sterne',
@@ -81,6 +120,7 @@ describe('Adding new blog data', () => {
     test('Missing title in POST returns 400', async () => {
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send({
                 author: "The Man Himself",
                 url: "https://www.example.com",
@@ -92,6 +132,7 @@ describe('Adding new blog data', () => {
     test('Missing url in POST returns 400', async () => {
         await api
             .post('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
             .send({
                 title: "Test Blog",
                 author: "The Man Himself",
@@ -102,21 +143,40 @@ describe('Adding new blog data', () => {
 });
 
 describe('Deleting blog data', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({});
+        token = await loginTestUser();
+
+        for (let i = 0; i < initialBlogs.length; i++) {
+            await api
+                .post('/api/blogs')
+                .set('Authorization', `Bearer ${token}`)
+                .send(initialBlogs[i]);
+        }
+    });
+
     test('Deleting with a valid id returns 204', async () => {
         const res = await api.get('/api/blogs');
+        const firstId = res.body[0].id.toString();
 
         await api
-            .delete(`/api/blogs/${res.body[0].id}`)
+            .delete(`/api/blogs/${firstId}`)
+            .set('Authorization', `Bearer ${token}`)
             .expect(204);
+        
+        const newRes = await api.get('/api/blogs');
+        expect(newRes.body[0].id.toString() === firstId).toBe(false);
     });
 
     test('Deleting with an invalid id returns 400', async () => {
         await api
             .delete('/api/blogs/659ea27a7e620fbc9c17c1b4')
+            .set('Authorization', `Bearer ${token}`)
             .expect(400);
         
         await api
             .delete('/api/blogs/321')
+            .set('Authorization', `Bearer ${token}`)
             .expect(400);
     });
 });
