@@ -1,5 +1,6 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog.js');
+const User = require('../models/user.js');
 
 // blogsRouter.get('/', (_request, response, next) => {
 //     Blog
@@ -14,7 +15,7 @@ const Blog = require('../models/blog.js');
 
 // We don't need to handle errors here because we use express-async-errors
 blogsRouter.get('/', async (_request, response) => {
-    const blogs = await Blog.find({});
+    const blogs = await Blog.find({}).populate('creator');
     response.json(blogs);
 });
 
@@ -30,9 +31,19 @@ blogsRouter.post('/', async (request, response) => {
         !Object.prototype.hasOwnProperty.call(request.body, 'url')) {
             response.sendStatus(400);
         }
+    
+    let blogData = {...request.body};
+    const users = await User.find({});
+    const creator = users[0];
+    
+    blogData.creator = creator.id;
 
-    const blog = new Blog(request.body);
+    const blog = new Blog(blogData);
     const result = await blog.save();
+
+    creator.blogs = creator.blogs.concat(blog._id);
+    await creator.save();
+
     response.status(201).json(result);
 });
 
