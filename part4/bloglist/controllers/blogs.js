@@ -1,6 +1,18 @@
+const jwt = require('jsonwebtoken');
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog.js');
 const User = require('../models/user.js');
+
+const getTokenFrom = request => {
+    // This gets the value of the Authorization header in the HTTP request
+    const authorization = request.get('authorization');
+
+    if (authorization && authorization.startsWith('Bearer ')) {
+        return authorization.replace('Bearer ', '');
+    }
+
+    return null;
+}
 
 // blogsRouter.get('/', (_request, response, next) => {
 //     Blog
@@ -20,22 +32,34 @@ blogsRouter.get('/', async (_request, response) => {
 });
 
 blogsRouter.post('/', async (request, response) => {
+    const body = request.body;
+    const token = getTokenFrom(request);
 
-    // We're not calling hasOwnProperty directly on the request.body object because
-    // it can be shadowed by a property with the same name.
-    if (!Object.prototype.hasOwnProperty.call(request.body, 'likes')) {
-        request.body.likes = 0;
+    if (!token) {
+        return response.status(401).json({ error: 'token missing' });
     }
 
-    if (!Object.prototype.hasOwnProperty.call(request.body, 'title') ||
-        !Object.prototype.hasOwnProperty.call(request.body, 'url')) {
+    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    
+    if (!decodedToken.id) {
+        return response.status(401).json({ error: 'token invalid' });
+    }
+    
+    const creator = await User.findById(decodedToken.id);
+    console.log(creator);
+
+    // We're not calling hasOwnProperty directly on the body object because
+    // it can be shadowed by a property with the same name.
+    if (!Object.prototype.hasOwnProperty.call(body, 'likes')) {
+        body.likes = 0;
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(body, 'title') ||
+        !Object.prototype.hasOwnProperty.call(body, 'url')) {
             response.sendStatus(400);
         }
     
-    let blogData = {...request.body};
-    const users = await User.find({});
-    const creator = users[0];
-    
+    let blogData = {...body};
     blogData.creator = creator.id;
 
     const blog = new Blog(blogData);
