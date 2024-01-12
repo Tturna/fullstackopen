@@ -3,17 +3,6 @@ const blogsRouter = require('express').Router();
 const Blog = require('../models/blog.js');
 const User = require('../models/user.js');
 
-const getTokenFrom = request => {
-    // This gets the value of the Authorization header in the HTTP request
-    const authorization = request.get('authorization');
-
-    if (authorization && authorization.startsWith('Bearer ')) {
-        return authorization.replace('Bearer ', '');
-    }
-
-    return null;
-}
-
 // blogsRouter.get('/', (_request, response, next) => {
 //     Blog
 //         .find({})
@@ -33,20 +22,27 @@ blogsRouter.get('/', async (_request, response) => {
 
 blogsRouter.post('/', async (request, response) => {
     const body = request.body;
-    const token = getTokenFrom(request);
+    const token = request.token;
 
     if (!token) {
         return response.status(401).json({ error: 'token missing' });
     }
 
-    const decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    let decodedToken = undefined;
+    try {
+        decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    }
+    catch (error) {
+        if (error.name === 'SyntaxError') {
+            return response.status(401).json({ error: 'token invalid' });
+        }
+    }
     
     if (!decodedToken.id) {
         return response.status(401).json({ error: 'token invalid' });
     }
     
     const creator = await User.findById(decodedToken.id);
-    console.log(creator);
 
     // We're not calling hasOwnProperty directly on the body object because
     // it can be shadowed by a property with the same name.
