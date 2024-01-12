@@ -29,16 +29,15 @@ blogsRouter.post('/', async (request, response) => {
     }
 
     let decodedToken = undefined;
+    let error = undefined;
     try {
         decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
     }
-    catch (error) {
-        if (error.name === 'SyntaxError') {
-            return response.status(401).json({ error: 'token invalid' });
-        }
+    catch (e) {
+        error = e;
     }
     
-    if (!decodedToken.id) {
+    if (!decodedToken.id || error === 'SyntaxError') {
         return response.status(401).json({ error: 'token invalid' });
     }
     
@@ -69,6 +68,35 @@ blogsRouter.post('/', async (request, response) => {
 
 blogsRouter.delete('/:id', async (request, response) => {
     const id = request.params.id;
+    const token = request.token;
+
+    if (!token) {
+        return response.status(401).json({ error: 'token missing' });
+    }
+
+    let decodedToken = undefined;
+    let error = undefined;
+    try {
+        decodedToken = jwt.verify(token, process.env.TOKEN_SECRET);
+    }
+    catch (e) {
+        error = e;
+    }
+    
+    if (!decodedToken.id || error === 'SyntaxError') {
+        return response.status(401).json({ error: 'token invalid' });
+    }
+
+    const user = await User.findById(decodedToken.id);
+    const targetBlog = await Blog.findById(id);
+
+    console.log(`operator: ${user.id.toString()}`);
+    console.log(`target title: ${targetBlog.title}`);
+    console.log(`target creator: ${targetBlog.creator.toString()}`);
+
+    if (targetBlog.creator.toString() !== user.id.toString()) {
+        return response.status(401).json({ error: 'You can only delete your own blogs' });
+    }
 
     const deleted = await Blog.findByIdAndRemove(id);
     
