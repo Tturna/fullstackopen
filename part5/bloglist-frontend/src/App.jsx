@@ -26,8 +26,9 @@ const App = () => {
 
       console.log(responseData)
       blogService.setToken(responseData.token)
+      window.localStorage.setItem('loggeduser', JSON.stringify(responseData))
       setUserData(responseData)
-      setUsername('')
+      setUsername(responseData.username)
       setPassword('')
     }
     catch (exception) {
@@ -37,6 +38,13 @@ const App = () => {
         setErrorMessage(null)
       }, 5000)
     }
+  }
+
+  const handleLogout = () => {
+    setUserData(null)
+    setUsername('')
+    setPassword('')
+    window.localStorage.removeItem('loggeduser')
   }
 
   if (userData === null) {
@@ -71,6 +79,9 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+
+      <p>Logged in as {username}</p>
+      <button onClick={handleLogout}>Logout</button>
 
       <p style={{color: 'red'}}>{errorMessage}</p>
       
