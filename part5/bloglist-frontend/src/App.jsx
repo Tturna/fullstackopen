@@ -9,6 +9,7 @@ const App = () => {
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
+  const [notificationMessage, setNotificationMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [userData, setUserData] = useState(null)
@@ -32,6 +33,11 @@ const App = () => {
     setNewTitle('')
     setNewAuthor('')
     setNewUrl('')
+
+    setNotificationMessage(`Added blog '${returnedBlog.title}' by ${returnedBlog.author}`)
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000);
   }
 
   const handleLogin = async (event) => {
@@ -42,7 +48,7 @@ const App = () => {
         username, password
       })
 
-      console.log(responseData)
+      console.log(`response from login: ${responseData}`)
       blogService.setToken(responseData.token)
       window.localStorage.setItem('loggeduser', JSON.stringify(responseData))
       setUserData(responseData)
@@ -51,7 +57,7 @@ const App = () => {
     }
     catch (exception) {
       console.log(exception)
-      setErrorMessage('Wrong credentials')
+      setErrorMessage('Wrong username or password')
       setTimeout(() => {
         setErrorMessage(null)
       }, 5000)
@@ -102,6 +108,7 @@ const App = () => {
       <button onClick={handleLogout}>Logout</button>
 
       <p style={{color: 'red'}}>{errorMessage}</p>
+      <p style={{color: 'green'}}>{notificationMessage}</p>
 
       <h3>New Blog</h3>
       <form onSubmit={addBlog}>
