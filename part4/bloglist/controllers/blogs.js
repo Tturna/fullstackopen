@@ -59,6 +59,7 @@ blogsRouter.delete('/:id', midware.userExtractor, async (request, response) => {
         return response.status(401).json({ error: 'You can only delete your own blogs' });
     }
 
+    console.log(`Deleting ${targetBlog.title}`)
     await Blog.findByIdAndDelete(id);
     
     response.status(204).end();

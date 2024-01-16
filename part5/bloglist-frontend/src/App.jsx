@@ -36,6 +36,11 @@ const App = () => {
     setBlogs(blogs.map(b => b.id === updated.id ? updated : b))
   }
 
+  const removeBlog = async (id) => {
+    await blogService.remove(id)
+    setBlogs(blogs.filter(b => b.id !== id))
+  }
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -112,7 +117,7 @@ const App = () => {
       </Togglable>
       
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
+        <Blog key={blog.id} {...{blog, updateBlog, removeBlog, loggedUser: username}}/>
       )}
     </div>
   )
