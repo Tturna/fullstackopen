@@ -4,10 +4,6 @@ const Blog = ({ blog, updateBlog }) => {
   const [detailVisible, setDetailVisible] = useState(false)
   const showWhenOpen = { display: detailVisible ? '' : 'none' }
   
-  if (blog.title === 'Bleak House') {
-    console.log(blog)
-  }
-
   const toggleDetail = () => setDetailVisible(!detailVisible)
 
   const handleLike = async () => {
