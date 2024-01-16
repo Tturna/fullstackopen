@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
 let testContainer
+let mockUpdater
 beforeEach(() => {
     const blog = {
         title: 'Test Blog',
@@ -15,7 +16,7 @@ beforeEach(() => {
     }
 
     const mockUser = 'funiuser'
-    const mockUpdater = jest.fn()
+    mockUpdater = jest.fn()
     const mockRemover = jest.fn()
 
     const { container } = render(
@@ -55,4 +56,13 @@ test('url and likes are shown once the "View" button is clicked', async () => {
     expect(mockHandler.mock.calls).toHaveLength(1)
     const blogDetails = testContainer.querySelector('.blogDetails')
     expect(blogDetails).not.toHaveStyle('display: none')
+})
+
+test('Clicking "like" twice calls the updater callback twice', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('Like')
+    await user.click(button)
+    await user.click(button)
+
+    expect(mockUpdater.mock.calls).toHaveLength(2)
 })
