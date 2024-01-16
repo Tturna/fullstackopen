@@ -1,11 +1,20 @@
 import { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, updateBlog }) => {
   const [detailVisible, setDetailVisible] = useState(false)
   const showWhenOpen = { display: detailVisible ? '' : 'none' }
+  
+  if (blog.title === 'Bleak House') {
+    console.log(blog)
+  }
 
   const toggleDetail = () => setDetailVisible(!detailVisible)
-  console.log(blog)
+
+  const handleLike = async () => {
+    const newBlog = {...blog}
+    newBlog.likes = blog.likes + 1
+    updateBlog(newBlog)
+  }
 
   const blogDiv = {
     border: 'solid 2px',
@@ -26,7 +35,7 @@ const Blog = ({ blog }) => {
       <div style={showWhenOpen}>
         <a href={blog.url} style={block}>{blog.url}</a>
         <p style={blogP}>likes: {blog.likes}</p>
-        <button>Like</button><br/>
+        <button onClick={handleLike}>Like</button><br/>
         <p style={blogP}>Added by {blog.creator.username}</p>
       </div>
       <button onClick={toggleDetail}>{detailVisible ? 'Hide' : 'View'}</button>
