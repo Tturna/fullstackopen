@@ -17,7 +17,7 @@ const App = () => {
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-    )  
+    )
   }, [])
 
   const createBlog = async (newBlog) => {
@@ -27,8 +27,8 @@ const App = () => {
 
     setNotificationMessage(`Added blog '${returnedBlog.title}' by ${returnedBlog.author}`)
     setTimeout(() => {
-        setNotificationMessage(null)
-    }, 5000);
+      setNotificationMessage(null)
+    }, 5000)
   }
 
   const updateBlog = async (newBlog) => {
@@ -75,7 +75,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <p style={{color: 'red'}}>{errorMessage}</p>
+        <p style={{ color: 'red' }}>{errorMessage}</p>
 
         <form onSubmit={handleLogin}>
           <div>
@@ -109,15 +109,15 @@ const App = () => {
       <p>Logged in as {username}</p>
       <button onClick={handleLogout}>Logout</button>
 
-      <p style={{color: 'red'}}>{errorMessage}</p>
-      <p style={{color: 'green'}}>{notificationMessage}</p>
+      <p style={{ color: 'red' }}>{errorMessage}</p>
+      <p style={{ color: 'green' }}>{notificationMessage}</p>
 
       <Togglable buttonLabel='New Blog' ref={blogFromRef}>
         <BlogForm createBlog={createBlog} />
       </Togglable>
-      
+
       {blogs.map(blog =>
-        <Blog key={blog.id} {...{blog, updateBlog, removeBlog, loggedUser: username}}/>
+        <Blog key={blog.id} {...{ blog, updateBlog, removeBlog, loggedUser: username }}/>
       )}
     </div>
   )
