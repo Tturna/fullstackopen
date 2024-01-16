@@ -1,9 +1,11 @@
 import React from 'react'
 import '@testing-library/jest-dom'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import Blog from './Blog'
 
-test('Renders title and author but no URL or likes', () => {
+let testContainer
+beforeEach(() => {
     const blog = {
         title: 'Test Blog',
         author: 'me',
@@ -25,8 +27,32 @@ test('Renders title and author but no URL or likes', () => {
         />
     )
 
+    testContainer = container
+})
+
+test('Renders title and author but no URL or likes', () => {
     // We assume url and likes are children of blogDetails :)
     screen.getByText('\'Test Blog\' by me')
-    const blogDetails = container.querySelector('.blogDetails')
+    const blogDetails = testContainer.querySelector('.blogDetails')
     expect(blogDetails).toHaveStyle('display: none')
+})
+
+test('url and likes are shown once the "View" button is clicked', async () => {
+    const user = userEvent.setup()
+    const button = screen.getByText('View')
+    const mockHandler = jest.fn()
+
+    const ogCallback = button.onclick
+    button.onclick = (event) => {
+        mockHandler(event)
+        ogCallback(event)
+    }
+
+    await user.click(button)
+
+    // We assume that the url and like count are visible when their parent
+    // (blogDetails) is visible :)
+    expect(mockHandler.mock.calls).toHaveLength(1)
+    const blogDetails = testContainer.querySelector('.blogDetails')
+    expect(blogDetails).not.toHaveStyle('display: none')
 })
