@@ -49,6 +49,37 @@ describe('Blog app', function() {
             cy.contains('\'Test Blog\' by Test Author')
         })
 
+        it.only('Blogs are ordered by likes', function() {
+            cy.intercept('POST', '/api/blogs').as('createBlog')
+            cy.intercept('PUT', '/api/blogs/*').as('updateBlog')
+
+            for (let i = 0; i < 3; i++) {
+                cy.contains('New Blog').click()
+                cy.get('#titleInput').type('Blog' + i)
+                cy.get('#authorInput').type('Author' + i)
+                cy.get('#urlInput').type('https://www.example.com')
+                cy.contains('Create').click()
+
+                cy.wait('@createBlog')
+
+                cy.get('.blog:last').contains('View').click()
+                cy.get('.likeBtn:last').then($btn => {
+                    const clickAndWait = index => {
+                        if (index < i) {
+                            $btn.click()
+                            cy.wait('@updateBlog').then(() => {
+                                clickAndWait(index + 1)
+                            })
+                        }
+                    }
+
+                    clickAndWait(0)
+                })
+            }
+
+            cy.get('.blog:first').contains('Blog2')
+        })
+
         describe('With existing blog data', function() {
             beforeEach(() => {
                 cy.contains('New Blog').click()
@@ -61,9 +92,9 @@ describe('Blog app', function() {
 
             it('Users can like a blog', function() {
                 cy.contains('View').click()
-                cy.get('#likes').contains('0')
+                cy.get('.likes').contains('0')
                 cy.contains('Like').click()
-                cy.get('#likes').contains('1')
+                cy.get('.likes').contains('1')
             })
 
             it('Users can delete their blogs', function() {

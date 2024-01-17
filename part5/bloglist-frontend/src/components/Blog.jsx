@@ -38,8 +38,8 @@ const Blog = ({ blog, updateBlog, removeBlog, loggedUser }) => {
             <p style={blogP}>&apos;{blog.title}&apos; by {blog.author}</p>
             <div style={showWhenOpen} className='blogDetails'>
                 <a href={blog.url} style={block}>{blog.url}</a>
-                <p id='likes' style={blogP}>likes: {blog.likes}</p>
-                <button onClick={handleLike}>Like</button><br/>
+                <p className='likes' style={blogP}>likes: {blog.likes}</p>
+                <button className='likeBtn' onClick={handleLike}>Like</button><br/>
                 <p style={blogP}>Added by {blog.creator.username}</p><br/>
                 {loggedIsOwner && <button onClick={handleRemove}>Delete</button>}
             </div>

@@ -33,7 +33,10 @@ const App = () => {
 
     const updateBlog = async (newBlog) => {
         const updated = await blogService.update(newBlog)
-        setBlogs(blogs.map(b => b.id === updated.id ? updated : b))
+        setBlogs(
+            blogs.map(b => b.id === updated.id ? updated : b)
+                .sort((a, b) => b.likes - a.likes)
+        )
     }
 
     const removeBlog = async (id) => {
