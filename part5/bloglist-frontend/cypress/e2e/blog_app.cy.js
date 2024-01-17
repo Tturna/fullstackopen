@@ -28,4 +28,23 @@ describe('Blog app', function() {
             cy.contains('Wrong username or password')
         })
     })
+
+    describe('When logged in', function() {
+        beforeEach(function() {
+            // Felt cute, might refactor this later
+            cy.get('#usernameInput').type('testdude')
+            cy.get('#passwordInput').type('password')
+            cy.contains('login').click()
+            cy.contains('Logged in as testdude')
+        })
+
+        it('A blog can be created', function() {
+            cy.contains('New Blog').click()
+            cy.get('#titleInput').type('Test Blog')
+            cy.get('#authorInput').type('Test Author')
+            cy.get('#urlInput').type('https://www.example.com')
+            cy.contains('Create').click()
+            cy.contains('\'Test Blog\' by Test Author')
+        })
+    })
 })
