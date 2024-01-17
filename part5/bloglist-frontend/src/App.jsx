@@ -21,7 +21,9 @@ const App = () => {
     }, [])
 
     const createBlog = async (newBlog) => {
+        console.log(newBlog)
         const returnedBlog = await blogService.create(newBlog)
+        console.log(returnedBlog)
         blogFromRef.current.toggleVisibility()
         setBlogs(blogs.concat(returnedBlog))
 

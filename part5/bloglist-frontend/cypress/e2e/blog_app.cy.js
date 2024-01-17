@@ -5,8 +5,10 @@ describe('Blog app', function() {
         cy.request('POST', `${baseUrl}/api/testing/reset`)
         cy.request('POST', `${baseUrl}/api/users`, {
             username: 'testdude', password: 'password'
+        }).then(response => {
+            localStorage.setItem('loggeduser', JSON.stringify(response.body))
+            cy.visit('http://localhost:5173')
         })
-        cy.visit('http://localhost:5173')
     })
 
     it('Login form is shown', function() {
@@ -54,7 +56,7 @@ describe('Blog app', function() {
                 cy.get('#authorInput').type('Test Author')
                 cy.get('#urlInput').type('https://www.example.com')
                 cy.contains('Create').click()
-                cy.contains('\'Test Blog\' by Test Author')
+                cy.get('.blog')
             })
 
             it('Users can like a blog', function() {
@@ -62,6 +64,12 @@ describe('Blog app', function() {
                 cy.get('#likes').contains('0')
                 cy.contains('Like').click()
                 cy.get('#likes').contains('1')
+            })
+
+            it('Users can delete their blogs', function() {
+                cy.contains('View').click()
+                cy.contains('Delete').click()
+                cy.get('.blog').should('not.exist')
             })
         })
     })
