@@ -71,6 +71,28 @@ describe('Blog app', function() {
                 cy.contains('Delete').click()
                 cy.get('.blog').should('not.exist')
             })
+
+            it('Users can only see a Delete button for their own blogs', function() {
+                // new user
+                cy.contains('Logout').click()
+
+                // this should probably be refactored
+                cy.request('POST', `${baseUrl}/api/users`, {
+                    username: 'testdude2', password: 'password'
+                }).then(response => {
+                    localStorage.setItem('loggeduser', JSON.stringify(response.body))
+                    cy.visit('http://localhost:5173')
+                })
+
+                // should definitely be refactored at this point
+                cy.get('#usernameInput').type('testdude2')
+                cy.get('#passwordInput').type('password')
+                cy.contains('login').click()
+                cy.contains('Logged in as testdude2')
+
+                cy.contains('View').click()
+                cy.contains('Delete').should('not.exist')
+            })
         })
     })
 })
