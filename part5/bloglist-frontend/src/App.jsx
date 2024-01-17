@@ -79,20 +79,22 @@ const App = () => {
 
                 <form onSubmit={handleLogin}>
                     <div>
-            username
+                        username
                         <input
                             type="text"
                             value={username}
                             name="Username"
+                            id="usernameInput"
                             onChange={({ target }) => setUsername(target.value)}
                         />
                     </div>
                     <div>
-            password
+                        password
                         <input
                             type="password"
                             value={password}
                             name="Password"
+                            id="passwordInput"
                             onChange={({ target }) => setPassword(target.value)}
                         />
                     </div>
