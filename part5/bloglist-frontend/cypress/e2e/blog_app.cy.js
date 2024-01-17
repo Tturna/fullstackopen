@@ -46,5 +46,23 @@ describe('Blog app', function() {
             cy.contains('Create').click()
             cy.contains('\'Test Blog\' by Test Author')
         })
+
+        describe('With existing blog data', function() {
+            beforeEach(() => {
+                cy.contains('New Blog').click()
+                cy.get('#titleInput').type('Test Blog')
+                cy.get('#authorInput').type('Test Author')
+                cy.get('#urlInput').type('https://www.example.com')
+                cy.contains('Create').click()
+                cy.contains('\'Test Blog\' by Test Author')
+            })
+
+            it('Users can like a blog', function() {
+                cy.contains('View').click()
+                cy.get('#likes').contains('0')
+                cy.contains('Like').click()
+                cy.get('#likes').contains('1')
+            })
+        })
     })
 })
