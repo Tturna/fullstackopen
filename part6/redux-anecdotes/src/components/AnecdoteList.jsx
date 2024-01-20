@@ -1,5 +1,6 @@
 import { useSelector, useDispatch } from "react-redux";
 import { voteOn } from "../reducers/anecdoteReducer";
+import { changeNotification } from "../reducers/notificationReducer";
 
 const AnecdoteList = () => {
     const anecdotes = useSelector(state => {
@@ -13,6 +14,13 @@ const AnecdoteList = () => {
 
     const vote = (id) => {
         console.log('vote', id)
+        const text = anecdotes.find(n => n.id === id).content
+
+        // This could do with a refactor
+        dispatch(changeNotification(`You voted '${text}'`))
+        setTimeout(() => {
+            dispatch(changeNotification(''))
+        }, 5000)
         dispatch(voteOn(id))
     }
 
