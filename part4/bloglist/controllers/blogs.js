@@ -38,12 +38,15 @@ blogsRouter.post('/', midware.userExtractor, async (request, response) => {
     blogData.creator = creator.id;
 
     const blog = new Blog(blogData);
-    const result = await blog.save();
+    await blog.save();
 
     creator.blogs = creator.blogs.concat(blog._id);
     await creator.save();
 
-    response.status(201).json(result);
+    // do this just to populate the creator field
+    const populated = await Blog.findById(blog._id).populate('creator')
+
+    response.status(201).json(populated);
 });
 
 blogsRouter.delete('/:id', midware.userExtractor, async (request, response) => {
