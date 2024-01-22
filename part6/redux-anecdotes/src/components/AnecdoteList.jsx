@@ -13,15 +13,13 @@ const AnecdoteList = () => {
     const dispatch = useDispatch()
 
     const vote = (id) => {
-        console.log('vote', id)
         const text = anecdotes.find(n => n.id === id).content
 
-        // This could do with a refactor
+        dispatch(voteOn(id))
         dispatch(changeNotification(`You voted '${text}'`))
         setTimeout(() => {
             dispatch(changeNotification(''))
         }, 5000)
-        dispatch(voteOn(id))
     }
 
     return(
