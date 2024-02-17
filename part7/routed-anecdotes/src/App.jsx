@@ -68,9 +68,9 @@ const CreateNew = (props) => {
   // const [author, setAuthor] = useState('')
   // const [info, setInfo] = useState('')
   const navigate = useNavigate()
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
+  const { reset: resetContent, ...content } = useField('text')
+  const { reset: resetAuthor, ...author } = useField('text')
+  const { reset: resetInfo, ...info } = useField('text')
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -81,6 +81,12 @@ const CreateNew = (props) => {
       votes: 0
     })
     navigate("/")
+  }
+
+  const resetFields = () => {
+    resetContent()
+    resetAuthor()
+    resetInfo()
   }
 
   return (
@@ -99,7 +105,8 @@ const CreateNew = (props) => {
           url for more info
           <input {...info} />
         </div>
-        <button>create</button>
+        <button type='submit'>create</button>
+        <button type='button' onClick={resetFields}>reset</button>
       </form>
     </div>
   )
@@ -150,7 +157,7 @@ const App = () => {
   const matchAnecdote = match
     ? anecdotes.find(a => a.id === Number(match.params.id))
     : null
-  
+
   const notificationStyle = {
     display: notification == '' ? 'none' : ''
   }
@@ -165,9 +172,9 @@ const App = () => {
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/about" element={<About />} />
         <Route path="/create" element={<CreateNew addNew={addNew} />} />
-        <Route path="/anecdotes/:id" element={<Anecdote anecdote={matchAnecdote}/>} />
+        <Route path="/anecdotes/:id" element={<Anecdote anecdote={matchAnecdote} />} />
       </Routes>
-      
+
       <Footer />
     </div>
   )
