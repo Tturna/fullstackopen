@@ -6,6 +6,7 @@ import { setBlogs, addBlog } from './reducers/blogsReducer';
 import { setUserData, clearUserData } from './reducers/userDataReducer';
 import BlogList from './components/BlogList';
 import BlogForm from './components/BlogForm';
+import UserList from './components/UserList';
 import Togglable from './components/Togglable';
 import Notification from './components/Notification';
 import blogService from './services/blogs';
@@ -118,6 +119,8 @@ const App = () => {
 
             <Notification isError={true} />
             <Notification />
+
+            <UserList />
 
             <Togglable buttonLabel="New Blog" ref={blogFromRef}>
                 <BlogForm createBlog={createBlog} />
