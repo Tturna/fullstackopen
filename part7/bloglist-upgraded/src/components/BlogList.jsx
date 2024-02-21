@@ -1,27 +1,12 @@
-import { useSelector, useDispatch } from 'react-redux';
-import {
-    updateBlog as updateBlogAction,
-    removeBlog as removeBlogAction,
-} from '../reducers/blogsReducer';
-import blogService from '../services/blogs';
-import Blog from './Blog';
+import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const BlogList = () => {
-    const dispatch = useDispatch();
-
-    const updateBlog = async (newBlog) => {
-        const updated = await blogService.update(newBlog);
-        dispatch(updateBlogAction(updated));
-    };
-
-    const removeBlog = async (id) => {
-        await blogService.remove(id);
-        dispatch(removeBlogAction(id));
-    };
-
     const blogs = useSelector((state) => state.blogs);
     const blogComponents = blogs.map((blog) => (
-        <Blog key={blog.id} {...{ blog, updateBlog, removeBlog }} />
+        <div key={blog.id} style={{border: "1px solid black", margin: "5px", padding: "5px"}}>
+            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> by {blog.author}
+        </div>
     ));
 
     return <div>{blogComponents}</div>;

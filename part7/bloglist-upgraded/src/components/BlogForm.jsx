@@ -1,16 +1,19 @@
 import { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 const BlogForm = ({ createBlog }) => {
     const [newTitle, setNewTitle] = useState('')
     const [newAuthor, setNewAuthor] = useState('')
     const [newUrl, setNewUrl] = useState('')
+    const userData = useSelector(state => state.userData);
 
     const addBlog = async (event) => {
         event.preventDefault()
         const newBlog = {
             title: newTitle,
             author: newAuthor,
-            url: newUrl
+            url: newUrl,
+            creator: userData.username
         }
 
         createBlog(newBlog)

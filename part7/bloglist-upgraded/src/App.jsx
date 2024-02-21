@@ -10,6 +10,7 @@ import Login from './components/Login';
 import Home from './components/Home';
 import UserList from './components/UserList';
 import UserInfo from './components/UserInfo';
+import Blog from './components/Blog';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -47,6 +48,7 @@ const App = () => {
                     <Route path='/' element={<Home />} />
                     <Route path='/users' element={<UserList />} />
                     <Route path='/users/:id' element={<UserInfo />} />
+                    <Route path='/blogs/:id' element={<Blog />} />
                 </Routes>
             </Router>
         </div>

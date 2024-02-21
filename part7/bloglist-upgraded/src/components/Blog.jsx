@@ -1,28 +1,37 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
+import { useParams } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import {
+    updateBlog as updateBlogAction,
+    removeBlog as removeBlogAction,
+} from '../reducers/blogsReducer';
+import blogService from '../services/blogs';
 
-const Blog = ({ blog, updateBlog, removeBlog }) => {
-    const [detailVisible, setDetailVisible] = useState(false);
-    const showWhenOpen = { display: detailVisible ? '' : 'none' };
-    const loggedUser = useSelector((state) => state.userData).username;
+const Blog = () => {
+    const state = useSelector(state => state);
+    const loggedUser = state.userData.username;
+    const id = useParams().id;
+    const blog = state.blogs.find(b => b.id === id);
+
+    if (!blog) return "Blog not found :(";
+
     const loggedIsOwner = blog.creator.username === loggedUser;
+    const dispatch = useDispatch();
 
-    const toggleDetail = () => setDetailVisible(!detailVisible);
-
-    const handleLike = () => {
+    const handleLike = async () => {
         const newBlog = { ...blog };
         newBlog.likes = blog.likes + 1;
-        updateBlog(newBlog);
+        const updated = await blogService.update(newBlog);
+        dispatch(updateBlogAction(updated));
     };
 
-    const handleRemove = () => {
+    const handleRemove = async () => {
         if (
             window.confirm(
                 `Are you sure you want to delete '${blog.title}' by ${blog.author}?`
             )
         ) {
-            removeBlog(blog.id);
+            await blogService.remove(blog.id);
+            dispatch(removeBlogAction(blog.id));
         }
     };
 
@@ -44,7 +53,7 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
             <p style={blogP}>
                 &apos;{blog.title}&apos; by {blog.author}
             </p>
-            <div style={showWhenOpen} className="blogDetails">
+            <div  className="blogDetails">
                 <a href={blog.url} style={block}>
                     {blog.url}
                 </a>
@@ -61,17 +70,8 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
                     <button onClick={handleRemove}>Delete</button>
                 )}
             </div>
-            <button onClick={toggleDetail}>
-                {detailVisible ? 'Hide' : 'View'}
-            </button>
         </div>
     );
-};
-
-Blog.propTypes = {
-    blog: PropTypes.object.isRequired,
-    updateBlog: PropTypes.func.isRequired,
-    removeBlog: PropTypes.func.isRequired,
 };
 
 export default Blog;
