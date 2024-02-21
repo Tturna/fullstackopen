@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { changeNotification } from '../reducers/notificationReducer';
 import { addBlog } from '../reducers/blogsReducer';
 import BlogList from './BlogList';
@@ -8,7 +8,6 @@ import Togglable from './Togglable';
 
 const Home = () => {
     const dispatch = useDispatch();
-    const userData = useSelector(state => state.userData);
     const blogFromRef = useRef();
 
     const createBlog = async (newBlog) => {

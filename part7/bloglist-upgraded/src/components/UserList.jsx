@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setUsers } from "../reducers/usersReducer";
 import userService from "../services/users";
@@ -32,7 +33,7 @@ const UserList = () => {
                 <tbody>
                     {usersData.map(u => (
                         <tr style={tableStyle} key={u.id}>
-                            <td style={tableStyle}>{u.username}</td>
+                            <td style={tableStyle}><Link to={`/users/${u.id}`}>{u.username}</Link></td>
                             <td style={tableStyle}>{u.blogs.length}</td>
                         </tr>
                     ))}

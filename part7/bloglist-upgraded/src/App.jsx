@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUserData } from './reducers/userDataReducer';
 import { setBlogs } from './reducers/blogsReducer';
@@ -9,6 +9,7 @@ import Notification from './components/Notification';
 import Login from './components/Login';
 import Home from './components/Home';
 import UserList from './components/UserList';
+import UserInfo from './components/UserInfo';
 
 const App = () => {
     const dispatch = useDispatch();
@@ -45,6 +46,7 @@ const App = () => {
                 <Routes>
                     <Route path='/' element={<Home />} />
                     <Route path='/users' element={<UserList />} />
+                    <Route path='/users/:id' element={<UserInfo />} />
                 </Routes>
             </Router>
         </div>
