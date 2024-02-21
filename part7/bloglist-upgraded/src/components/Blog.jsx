@@ -7,9 +7,6 @@ const Blog = ({ blog, updateBlog, removeBlog }) => {
     const showWhenOpen = { display: detailVisible ? '' : 'none' };
     const loggedUser = useSelector((state) => state.userData).username;
     const loggedIsOwner = blog.creator.username === loggedUser;
-    console.log(
-        `Comparing blog owner ${blog.creator.username} to logged ${loggedUser}`
-    );
 
     const toggleDetail = () => setDetailVisible(!detailVisible);
 
