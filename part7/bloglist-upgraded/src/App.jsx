@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearUserData } from './reducers/userDataReducer';
 import { setBlogs } from './reducers/blogsReducer';
@@ -33,24 +33,35 @@ const App = () => {
         window.localStorage.removeItem('loggeduser');
     };
 
+    const st = {
+        margin: "0 5px"
+    }
+
+    const navSt = {
+        display: "block ruby",
+        "background-color": "#dddddd"
+    }
+
     return (
         <div>
-            <h2>blogs</h2>
+            <nav style={navSt}>
+                <Link style={st} to="/" >Blogs</Link>
+                <Link style={st} to="/users" >Users</Link>
+                <p style={st}>Logged in as {userData.username}</p>
+                <button style={st} onClick={handleLogout}>Logout</button>
+            </nav>
 
-            <p>Logged in as {userData.username}</p>
-            <button onClick={handleLogout}>Logout</button>
+            <h2>blogs</h2>
 
             <Notification isError={true} />
             <Notification />
 
-            <Router>
-                <Routes>
-                    <Route path='/' element={<Home />} />
-                    <Route path='/users' element={<UserList />} />
-                    <Route path='/users/:id' element={<UserInfo />} />
-                    <Route path='/blogs/:id' element={<Blog />} />
-                </Routes>
-            </Router>
+            <Routes>
+                <Route path='/' element={<Home />} />
+                <Route path='/users' element={<UserList />} />
+                <Route path='/users/:id' element={<UserInfo />} />
+                <Route path='/blogs/:id' element={<Blog />} />
+            </Routes>
         </div>
     );
 };
