@@ -6,6 +6,19 @@ import {
 } from '../reducers/blogsReducer';
 import blogService from '../services/blogs';
 
+const Comments = ({ comments }) => {
+    console.log(comments);
+    if (!comments || comments.length == 0) return null;
+
+    return(
+        <div>
+            {comments.map(c => (
+                <li>{c}</li>
+            ))}
+        </div>
+    );
+}
+
 const Blog = () => {
     const state = useSelector(state => state);
     const loggedUser = state.userData.username;
@@ -35,11 +48,11 @@ const Blog = () => {
         }
     };
 
-    const blogDiv = {
-        border: 'solid 2px',
-        margin: '10px auto',
-        padding: '5px',
-    };
+    // const blogDiv = {
+    //     border: 'solid 2px',
+    //     margin: '10px auto',
+    //     padding: '5px',
+    // };
 
     const blogP = {
         display: 'inline-block',
@@ -49,7 +62,7 @@ const Blog = () => {
     const block = { display: 'block' };
 
     return (
-        <div style={blogDiv} className="blog">
+        <div className="blog">
             <p style={blogP}>
                 &apos;{blog.title}&apos; by {blog.author}
             </p>
@@ -69,6 +82,8 @@ const Blog = () => {
                 {loggedIsOwner && (
                     <button onClick={handleRemove}>Delete</button>
                 )}
+                <h3>Comments</h3>
+                <Comments comments={blog.comments} />
             </div>
         </div>
     );
