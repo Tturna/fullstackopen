@@ -39,7 +39,7 @@ const App = () => {
 
     const navSt = {
         display: "block ruby",
-        "background-color": "#dddddd"
+        "backgroundColor": "#dddddd"
     }
 
     return (

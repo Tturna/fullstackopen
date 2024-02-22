@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -13,13 +14,15 @@ const Comments = ({ comments }) => {
     return(
         <div>
             {comments.map(c => (
-                <li>{c}</li>
+                <li key={c}>{c}</li>
             ))}
         </div>
     );
 }
 
 const Blog = () => {
+    const [comment, setComment] = useState('');
+
     const state = useSelector(state => state);
     const loggedUser = state.userData.username;
     const id = useParams().id;
@@ -47,6 +50,19 @@ const Blog = () => {
             dispatch(removeBlogAction(blog.id));
         }
     };
+
+    const handleComment = async (event) => {
+        event.preventDefault();
+        const newBlog = { ...blog };
+        if (!newBlog.comments) {
+            newBlog.comments = [];
+        }
+
+        newBlog.comments = newBlog.comments.concat(comment);
+        console.log(newBlog);
+        const updated = await blogService.update(newBlog);
+        dispatch(updateBlogAction(updated));
+    }
 
     // const blogDiv = {
     //     border: 'solid 2px',
@@ -83,6 +99,16 @@ const Blog = () => {
                     <button onClick={handleRemove}>Delete</button>
                 )}
                 <h3>Comments</h3>
+                <form onSubmit={handleComment}>
+                    <input
+                        type='text'
+                        value={comment}
+                        placeholder='Your comment...'
+                        id='commentInput'
+                        onChange={e => setComment(e.target.value)}
+                    />
+                    <button>Add comment</button>
+                </form>
                 <Comments comments={blog.comments} />
             </div>
         </div>
