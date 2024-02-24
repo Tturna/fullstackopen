@@ -7,6 +7,16 @@ import {
 } from '../reducers/blogsReducer';
 import blogService from '../services/blogs';
 
+import styled from 'styled-components';
+
+const StyledButton = styled.button`
+    padding: 5px 15px;
+    color: #fff;
+    background-color: #FF715B;
+    border: none;
+    border-radius: 5px;
+`
+
 const Comments = ({ comments }) => {
     console.log(comments);
     if (!comments || comments.length == 0) return null;
@@ -89,14 +99,14 @@ const Blog = () => {
                 <p className="likes" style={blogP}>
                     likes: {blog.likes}
                 </p>
-                <button className="likeBtn" onClick={handleLike}>
+                <StyledButton className="likeBtn" onClick={handleLike}>
                     Like
-                </button>
+                </StyledButton>
                 <br />
                 <p style={blogP}>Added by {blog.creator.username}</p>
                 <br />
                 {loggedIsOwner && (
-                    <button onClick={handleRemove}>Delete</button>
+                    <StyledButton onClick={handleRemove}>Delete</StyledButton>
                 )}
                 <h3>Comments</h3>
                 <form onSubmit={handleComment}>
@@ -107,7 +117,7 @@ const Blog = () => {
                         id='commentInput'
                         onChange={e => setComment(e.target.value)}
                     />
-                    <button>Add comment</button>
+                    <StyledButton>Add comment</StyledButton>
                 </form>
                 <Comments comments={blog.comments} />
             </div>

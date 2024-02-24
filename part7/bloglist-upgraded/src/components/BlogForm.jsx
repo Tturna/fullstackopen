@@ -1,5 +1,14 @@
 import { useState } from 'react'
 import { useSelector } from 'react-redux'
+import styled from 'styled-components';
+
+const StyledButton = styled.button`
+    padding: 5px 15px;
+    color: #fff;
+    background-color: #FF715B;
+    border: none;
+    border-radius: 5px;
+`
 
 const BlogForm = ({ createBlog }) => {
     const [newTitle, setNewTitle] = useState('')
@@ -56,7 +65,7 @@ const BlogForm = ({ createBlog }) => {
                         onChange={(e) => setNewUrl(e.target.value)}
                     />
                 </div>
-                <button type='submit'>Create</button>
+                <StyledButton type='submit'>Create</StyledButton>
             </form>
         </div>
     )
