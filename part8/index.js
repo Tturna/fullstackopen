@@ -128,7 +128,11 @@ const typeDefs = `
       published: Int!,
       author: String!,
       genres: [String!]!
-    ): Book
+    ): Book,
+    editAuthor(
+      name: String!,
+      setBornTo: Int!
+    ): Author
   }
 `
 
@@ -180,6 +184,14 @@ const resolvers = {
 
       books.push(newBook)
       return newBook
+    },
+    editAuthor: (_root, args) => {
+      const author = authors.find(a => a.name === args.name)
+
+      if (!author) return null
+
+      author.born = args.setBornTo
+      return author
     }
   }
 }
