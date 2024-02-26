@@ -1,5 +1,6 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
+const { GraphQLError } = require('graphql')
 const mongoose = require('mongoose')
 require('dotenv').config()
 
@@ -116,19 +117,42 @@ const resolvers = {
           name: args.author
         })
 
-        existingAuthor = await newAuthor.save()
+        try {
+          existingAuthor = await newAuthor.save()
+        } catch (error) {
+          throw new GraphQLError('Error creating new author', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error
+            }
+          })
+        }
       }
       newBook.author = existingAuthor._id
 
-      await newBook.save()
+      try {
+        await newBook.save()
+      } catch (error) {
+        throw new GraphQLError('Error adding book', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
+      }
+
       return Book.findById(newBook._id).populate('author')
     },
     editAuthor: async (_root, args) => {
       const author = await Author.findOne({ name: args.name })
 
+      // Maybe this should throw an error too?
       if (!author) return null
 
       author.born = args.setBornTo
+
       return author.save()
     }
   }
