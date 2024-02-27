@@ -2,10 +2,12 @@ const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { GraphQLError } = require('graphql')
 const mongoose = require('mongoose')
+const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 const Author = require('./models/author')
 const Book = require('./models/book')
+const User = require('./models/user')
 
 const CONN_STRING = process.env.NODE_ENV === 'test' ? process.env.TEST_CONN_STRING : process.env.CONN_STRING
 mongoose.set('strictQuery', false)
@@ -37,11 +39,22 @@ const typeDefs = `
     bookCount: Int!
   }
 
+  type User {
+    username: String!,
+    favoriteGenre: String!,
+    id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
     allBooks (author: String, genre: String): [Book!]!,
     bookCount: Int!,
     allAuthors: [Author!]!,
-    authorCount: Int!
+    authorCount: Int!,
+    me: User
   }
 
   type Mutation {
@@ -51,10 +64,21 @@ const typeDefs = `
       author: String!,
       genres: [String!]!
     ): Book,
+
     editAuthor(
       name: String!,
       setBornTo: Int!
-    ): Author
+    ): Author,
+
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User,
+
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 `
 
@@ -105,10 +129,21 @@ const resolvers = {
         return ao
       })
     },
-    authorCount: async () => Author.collection.countDocuments()
+    authorCount: async () => Author.collection.countDocuments(),
+    me: (_root, _args, context) => {
+      return context.currentUser
+    }
   },
   Mutation: {
-    addBook: async (_root, args) => {
+    addBook: async (_root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('Login required', {
+          extensions: {
+            code: 'UNAUTHORIZED'
+          }
+        })
+      }
+
       const newBook = new Book({ ...args })
       let existingAuthor = await Author.findOne({ name: args.author })
 
@@ -145,7 +180,15 @@ const resolvers = {
 
       return Book.findById(newBook._id).populate('author')
     },
-    editAuthor: async (_root, args) => {
+    editAuthor: async (_root, args, context) => {
+      if (!context.currentUser) {
+        throw new GraphQLError('Login required', {
+          extensions: {
+            code: 'UNAUTHORIZED'
+          }
+        })
+      }
+
       const author = await Author.findOne({ name: args.name })
 
       // Maybe this should throw an error too?
@@ -154,6 +197,39 @@ const resolvers = {
       author.born = args.setBornTo
 
       return author.save()
+    },
+    createUser: async (_root, args) => {
+      const user = new User({ username: args.username, favoriteGenre: args.favoriteGenre })
+
+      try {
+        return user.save()
+      } catch (error) {
+        throw new GraphQLError('Error creating user', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.username,
+            error
+          }
+        })
+      }
+    },
+    login: async (_root, args) => {
+      const user = await User.findOne({ username: args.username })
+
+      if (!user || args.password !== 'pasd') {
+        throw new GraphQLError('Wrong credentials', {
+          extensions: {
+            code: 'BAD_USER_INPUT'
+          }
+        })
+      }
+
+      const userForToken = {
+        username: user.username,
+        id: user._id
+      }
+
+      return { value: jwt.sign(userForToken, process.env.TOKEN_SECRET) }
     }
   }
 }
@@ -165,6 +241,18 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req, res }) => {
+    const auth = req ? req.headers.authorization : null
+
+    if (auth && auth.startsWith('Bearer')) {
+      const decodedToken = jwt.verify(
+        auth.substring(7), process.env.TOKEN_SECRET
+      )
+
+      const currentUser = await User.findById(decodedToken.id)
+      return { currentUser }
+    }
+  }
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`)
 })
