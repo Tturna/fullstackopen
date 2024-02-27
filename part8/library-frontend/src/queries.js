@@ -65,6 +65,7 @@ export const NEW_BOOK = gql`
         name
       }
       published
+      genres
     }
   }
 `

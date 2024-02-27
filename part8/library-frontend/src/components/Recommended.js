@@ -8,7 +8,6 @@ const Books = (props) => {
 
   useEffect(() => {
     if (favGenreResult.data) {
-      console.log(favGenreResult.data)
       getBooks({ variables: { genre: favGenreResult.data.me.favoriteGenre } })
     }
   }, [favGenreResult.data, getBooks])
