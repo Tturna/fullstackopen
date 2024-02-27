@@ -10,7 +10,7 @@ const Books = (props) => {
   if (!props.show) {
     return null
   }
-  
+
   if (genresResult.loading || (booksResult.called && booksResult.loading)) return <div>Loading...</div>
 
   const genresAll = genresResult.data.allBooks.map(b => b.genres)

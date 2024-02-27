@@ -14,7 +14,7 @@ const Login = ({ show, setToken, setPage }) => {
             window.localStorage.setItem('libraryLoggedUser', token)
             setPage('authors')
         }
-    }, [result.data])
+    }, [result.data, setPage, setToken])
 
     if (!show) {
         return null
