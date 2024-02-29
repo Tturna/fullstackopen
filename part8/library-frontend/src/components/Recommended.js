@@ -7,7 +7,7 @@ const Books = (props) => {
   const [getBooks, booksResult] = useLazyQuery(BOOKS_IN_GENRE)
 
   useEffect(() => {
-    if (favGenreResult.data) {
+    if (favGenreResult.data && favGenreResult.data.me) {
       getBooks({ variables: { genre: favGenreResult.data.me.favoriteGenre } })
     }
   }, [favGenreResult.data, getBooks])
