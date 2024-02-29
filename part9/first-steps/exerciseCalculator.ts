@@ -21,6 +21,14 @@ function calculateExercises(dailyExerciseHours: number[], targetDailyHours: numb
     const success = dailyHours >= targetDailyHours;
 
     const rating = Math.min(Math.max(Math.floor(dailyHours / targetDailyHours * 3), 1), 3);
+
+    let ratingDescription = "Not even close";
+
+    if (rating === 2) {
+        ratingDescription = "You tried";
+    } else if (rating === 3) {
+        ratingDescription = "You met your goal!";
+    }
     
     const results: TrainingResults = {
         periodLength,
@@ -29,7 +37,7 @@ function calculateExercises(dailyExerciseHours: number[], targetDailyHours: numb
         dailyHours,
         success,
         rating,
-        ratingDescription: "lmao"
+        ratingDescription
     }
 
     return results;
