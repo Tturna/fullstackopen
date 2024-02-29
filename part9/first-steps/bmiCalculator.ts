@@ -1,4 +1,4 @@
-function calculateBmi(heightCm: number, weightKg: number): string {
+export function calculateBmi(heightCm: number, weightKg: number): string {
     const heightM = heightCm / 100;
     const index = weightKg / (heightM * heightM);
 
@@ -24,11 +24,11 @@ function calculateBmi(heightCm: number, weightKg: number): string {
 
 }
 
-const inputHeightCm = Number(process.argv[2]);
-const inputWeightKg = Number(process.argv[3]);
+// const inputHeightCm = Number(process.argv[2]);
+// const inputWeightKg = Number(process.argv[3]);
 
-if (isNaN(inputHeightCm) || isNaN(inputWeightKg)) {
-    throw new Error('Provided values are not numbers');
-}
+// if (isNaN(inputHeightCm) || isNaN(inputWeightKg)) {
+//     throw new Error('Provided values are not numbers');
+// }
 
-console.log(calculateBmi(inputHeightCm, inputWeightKg));
+// console.log(calculateBmi(inputHeightCm, inputWeightKg));
