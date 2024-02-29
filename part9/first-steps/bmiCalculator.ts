@@ -24,4 +24,11 @@ function calculateBmi(heightCm: number, weightKg: number): string {
 
 }
 
-console.log(calculateBmi(180, 74));
+const inputHeightCm = Number(process.argv[2]);
+const inputWeightKg = Number(process.argv[3]);
+
+if (isNaN(inputHeightCm) || isNaN(inputWeightKg)) {
+    throw new Error('Provided values are not numbers');
+}
+
+console.log(calculateBmi(inputHeightCm, inputWeightKg));

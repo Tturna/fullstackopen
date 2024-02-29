@@ -43,4 +43,20 @@ function calculateExercises(dailyExerciseHours: number[], targetDailyHours: numb
     return results;
 }
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+if (process.argv.length < 4) throw new Error('Not enough arguments');
+
+const inputTargetDailyHours = Number(process.argv[2]);
+
+if (isNaN(inputTargetDailyHours)) throw new Error(`Parameter '${process.argv[2]}' is not a number!`);
+
+let inputExerciseHours: number[] = [];
+
+for (let i = 3; i < process.argv.length; i++) {
+    const dayHours = Number(process.argv[i]);
+
+    if (isNaN(dayHours)) throw new Error(`Parameter '${process.argv[i]}' is not a number!`);
+
+    inputExerciseHours.push(dayHours);
+}
+
+console.log(calculateExercises(inputExerciseHours, inputTargetDailyHours));
