@@ -39,6 +39,9 @@ const resolvers = {
       return response
     },
     bookCount: async () => Book.collection.countDocuments(),
+    // I accidentally avoided the N+1 problem in this resolver by fetching all the
+    // books and doing the lookups in memory. This just does 2 database queries
+    // regardless of author count.
     allAuthors: async () => {
       const authors = await Author.find({})
       const books = await Book.find({})
