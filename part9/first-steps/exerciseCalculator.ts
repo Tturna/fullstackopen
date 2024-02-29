@@ -8,7 +8,7 @@ interface TrainingResults {
     ratingDescription: string
 }
 
-function calculateExercises(dailyExerciseHours: number[], targetDailyHours: number): TrainingResults {
+export function calculateExercises(dailyExerciseHours: number[], targetDailyHours: number): TrainingResults {
     let sum = 0;
 
     dailyExerciseHours.forEach(dayHours => {
@@ -43,20 +43,20 @@ function calculateExercises(dailyExerciseHours: number[], targetDailyHours: numb
     return results;
 }
 
-if (process.argv.length < 4) throw new Error('Not enough arguments');
+// if (process.argv.length < 4) throw new Error('Not enough arguments');
 
-const inputTargetDailyHours = Number(process.argv[2]);
+// const inputTargetDailyHours = Number(process.argv[2]);
 
-if (isNaN(inputTargetDailyHours)) throw new Error(`Parameter '${process.argv[2]}' is not a number!`);
+// if (isNaN(inputTargetDailyHours)) throw new Error(`Parameter '${process.argv[2]}' is not a number!`);
 
-const inputExerciseHours: number[] = [];
+// const inputExerciseHours: number[] = [];
 
-for (let i = 3; i < process.argv.length; i++) {
-    const dayHours = Number(process.argv[i]);
+// for (let i = 3; i < process.argv.length; i++) {
+//     const dayHours = Number(process.argv[i]);
 
-    if (isNaN(dayHours)) throw new Error(`Parameter '${process.argv[i]}' is not a number!`);
+//     if (isNaN(dayHours)) throw new Error(`Parameter '${process.argv[i]}' is not a number!`);
 
-    inputExerciseHours.push(dayHours);
-}
+//     inputExerciseHours.push(dayHours);
+// }
 
-console.log(calculateExercises(inputExerciseHours, inputTargetDailyHours));
+// console.log(calculateExercises(inputExerciseHours, inputTargetDailyHours));
