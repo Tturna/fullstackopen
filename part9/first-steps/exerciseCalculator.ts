@@ -13,7 +13,7 @@ function calculateExercises(dailyExerciseHours: number[], targetDailyHours: numb
 
     dailyExerciseHours.forEach(dayHours => {
         sum += dayHours;
-    })
+    });
 
     const periodLength = dailyExerciseHours.length;
     const trainingDays = dailyExerciseHours.filter(dayHours => dayHours > 0).length;
@@ -38,7 +38,7 @@ function calculateExercises(dailyExerciseHours: number[], targetDailyHours: numb
         success,
         rating,
         ratingDescription
-    }
+    };
 
     return results;
 }
@@ -49,7 +49,7 @@ const inputTargetDailyHours = Number(process.argv[2]);
 
 if (isNaN(inputTargetDailyHours)) throw new Error(`Parameter '${process.argv[2]}' is not a number!`);
 
-let inputExerciseHours: number[] = [];
+const inputExerciseHours: number[] = [];
 
 for (let i = 3; i < process.argv.length; i++) {
     const dayHours = Number(process.argv[i]);
