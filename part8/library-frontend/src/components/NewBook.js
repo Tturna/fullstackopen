@@ -11,22 +11,22 @@ const NewBook = (props) => {
 
   const [ createBook ] = useMutation(NEW_BOOK, {
     update: (cache, { data: { addBook }}) => {
-      addBook.genres.forEach(genre => {
-        const existingData = cache.readQuery({
-          query: BOOKS_IN_GENRE,
-          variables: { genre },
-        })
+      // addBook.genres.forEach(genre => {
+      //   const existingData = cache.readQuery({
+      //     query: BOOKS_IN_GENRE,
+      //     variables: { genre },
+      //   })
   
-        if (existingData) {
-          cache.writeQuery({
-            query: BOOKS_IN_GENRE,
-            variables: { genre },
-            data: {
-              allBooks: existingData.allBooks.concat(addBook),
-            },
-          })
-        }
-      })
+      //   if (existingData) {
+      //     cache.writeQuery({
+      //       query: BOOKS_IN_GENRE,
+      //       variables: { genre },
+      //       data: {
+      //         allBooks: existingData.allBooks.concat(addBook),
+      //       },
+      //     })
+      //   }
+      // })
     },
     refetchQueries: [{ query: ALL_BOOKS_GENRES }]
   })

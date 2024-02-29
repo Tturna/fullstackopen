@@ -6,7 +6,7 @@ import Recommended from './components/Recommended'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
 
-import { BOOK_ADDED } from './queries'
+import { BOOK_ADDED, BOOKS_IN_GENRE } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -22,9 +22,27 @@ const App = () => {
   }, [])
 
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
+    onData: ({ data, client }) => {
       const d = data.data
+      const cache = client.cache
       window.alert(`'${d.bookAdded.title}' by ${d.bookAdded.author.name} was added`)
+
+      d.bookAdded.genres.forEach(genre => {
+        const existingData = cache.readQuery({
+          query: BOOKS_IN_GENRE,
+          variables: { genre },
+        })
+  
+        if (existingData) {
+          cache.writeQuery({
+            query: BOOKS_IN_GENRE,
+            variables: { genre },
+            data: {
+              allBooks: existingData.allBooks.concat(d.bookAdded),
+            },
+          })
+        }
+      })
     }
   })
 
