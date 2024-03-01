@@ -1,27 +1,7 @@
 import { useState, useEffect } from "react"
 import diaryService from "./services/diaryService";
-
-enum Weather {
-  Sunny = 'sunny',
-  Rainy = 'rainy',
-  Cloudy = 'cloudy',
-  Stormy = 'stormy',
-  Windy = 'windy',
-}
-
-enum Visibility {
-  Great = 'great',
-  Good = 'good',
-  Ok = 'ok',
-  Poor = 'poor',
-}
-
-interface DiaryEntry {
-  id: string,
-  date: string,
-  weather: Weather,
-  visibility: Visibility
-}
+import { DiaryEntry } from "./types";
+import NewEntryForm from "./components/NewEntryForm";
 
 const Entry = ({ diaryEntry }: { diaryEntry: DiaryEntry }) => {
   return(
@@ -60,11 +40,16 @@ function App() {
     });
   }, []);
 
+  const handleAddEntryState = (addedEntry: DiaryEntry) => {
+    setEntries(entries.concat(addedEntry));
+  }
+
   if (entries.length == 0) return <div>Loading...</div>
 
   return (
     <div>
       <h1>Flight Diary</h1>
+      <NewEntryForm addEntryState={handleAddEntryState} />
       <Diary diaryEntries={entries}/>
     </div>
   )
