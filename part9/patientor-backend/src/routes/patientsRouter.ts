@@ -10,4 +10,19 @@ router.get('/', (_req, res) => {
     res.json(safePatients);
 });
 
+router.post('/', (req, res) => {
+    try {
+        const validatedData = patientsService.validatePatientData(req.body);
+        res.json(patientsService.addPatient(validatedData));
+    } catch (error) {
+        let errorMessage = 'Error adding patient. ';
+        if (error instanceof Error) {
+            errorMessage += error.message;
+        }
+
+        console.log(errorMessage);
+        res.status(400).json({ error: errorMessage });
+    }
+});
+
 export default router;
