@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import patients from "../../services/patients";
 import { Patient } from "../../types";
+import Entries from "./Entries";
 
 const PatientPage = () => {
     const [patient, setPatient] = useState<Patient>();
@@ -28,6 +29,9 @@ const PatientPage = () => {
             <p>SSN: {patient.ssn}</p>
             <p>Occupation: {patient.occupation}</p>
             <p>Date of birth: {patient.dateOfBirth}</p>
+
+            <h3>Entries</h3>
+            <Entries entries={patient.entries} />
         </div>
     );
 };
