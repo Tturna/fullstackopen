@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { HealthCheckEntry, Entry } from "../../types";
 import entriesService from "../../services/entries";
+import { HospitalEntry, Entry } from "../../types";
 import axios from "axios";
 
 interface Props {
@@ -10,22 +10,26 @@ interface Props {
     diagnosisCodes: string[];
 }
 
-const NewHealthCheckEntryForm = (props: Props) => {
+const NewHospitalEntryForm = (props: Props) => {
     const [date, setDate] = useState('');
     const [specialist, setSpecialist] = useState('');
     const [description, setDescription] = useState('');
-    const [healthCheckRating, setHealthCheckRating] = useState('');
+    const [dischargeDate, setDischargeDate] = useState('');
+    const [dischargeCriteria, setDischargeCriteria] = useState('');
     const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
     const handleSubmit = (event: React.SyntheticEvent) => {
         event.preventDefault();
         
-        const newEntry: Omit<HealthCheckEntry, 'id'> = {
+        const newEntry: Omit<HospitalEntry, 'id'> = {
             date,
             specialist,
             description,
-            type: "HealthCheck",
-            healthCheckRating: Number(healthCheckRating)
+            type: "Hospital",
+            discharge: {
+                date: dischargeDate,
+                criteria: dischargeCriteria
+            }
         };
 
         if (diagnosisCodes.length > 0) {
@@ -59,7 +63,7 @@ const NewHealthCheckEntryForm = (props: Props) => {
 
     return (
         <div style={formStyle}>
-            <h3>Add a new health check entry</h3>
+            <h3>Add a new hospital entry</h3>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>date</label>
@@ -80,15 +84,12 @@ const NewHealthCheckEntryForm = (props: Props) => {
                     </select>
                 </div>
                 <div>
-                    <label>health check rating</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('0')} />
-                    <label>Healthy</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('1')} />
-                    <label>Low risk</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('2')} />
-                    <label>High risk</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('3')} />
-                    <label>Critical risk</label>
+                    <label>discharge date</label>
+                    <input type="date" value={dischargeDate} onChange={e => setDischargeDate(e.target.value)} />
+                </div>
+                <div>
+                    <label>discharge criteria</label>
+                    <input value={dischargeCriteria} onChange={e => setDischargeCriteria(e.target.value)} />
                 </div>
                 <button type="submit">Add</button>
             </form>
@@ -96,4 +97,4 @@ const NewHealthCheckEntryForm = (props: Props) => {
     );
 };
 
-export default NewHealthCheckEntryForm;
+export default NewHospitalEntryForm;

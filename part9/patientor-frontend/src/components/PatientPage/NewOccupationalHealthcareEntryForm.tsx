@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { HealthCheckEntry, Entry } from "../../types";
 import entriesService from "../../services/entries";
+import { Entry, OccupationalHealthcareEntry } from "../../types";
 import axios from "axios";
 
 interface Props {
@@ -10,26 +10,35 @@ interface Props {
     diagnosisCodes: string[];
 }
 
-const NewHealthCheckEntryForm = (props: Props) => {
+const NewOccupationalHealthcareEntryForm = (props: Props) => {
     const [date, setDate] = useState('');
     const [specialist, setSpecialist] = useState('');
     const [description, setDescription] = useState('');
-    const [healthCheckRating, setHealthCheckRating] = useState('');
+    const [employerName, setEmployerName] = useState('');
+    const [sickLeaveStartDate, setSickLeaveStartDate] = useState('');
+    const [sickLeaveEndDate, setSickLeaveEndDate] = useState('');
     const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
 
     const handleSubmit = (event: React.SyntheticEvent) => {
         event.preventDefault();
         
-        const newEntry: Omit<HealthCheckEntry, 'id'> = {
+        const newEntry: Omit<OccupationalHealthcareEntry, 'id'> = {
             date,
             specialist,
             description,
-            type: "HealthCheck",
-            healthCheckRating: Number(healthCheckRating)
+            type: "OccupationalHealthcare",
+            employerName
         };
 
         if (diagnosisCodes.length > 0) {
             newEntry.diagnosisCodes = diagnosisCodes;
+        }
+
+        if (sickLeaveStartDate && sickLeaveEndDate) {
+            newEntry.sickLeave = {
+                startDate: sickLeaveStartDate,
+                endDate: sickLeaveEndDate
+            };
         }
 
         entriesService.create(props.patientId, newEntry)
@@ -59,7 +68,7 @@ const NewHealthCheckEntryForm = (props: Props) => {
 
     return (
         <div style={formStyle}>
-            <h3>Add a new health check entry</h3>
+            <h3>Add a new occupational healthcare entry</h3>
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>date</label>
@@ -80,15 +89,16 @@ const NewHealthCheckEntryForm = (props: Props) => {
                     </select>
                 </div>
                 <div>
-                    <label>health check rating</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('0')} />
-                    <label>Healthy</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('1')} />
-                    <label>Low risk</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('2')} />
-                    <label>High risk</label>
-                    <input type="radio" name="healthCheckRating" onChange={() => setHealthCheckRating('3')} />
-                    <label>Critical risk</label>
+                    <label>employer name</label>
+                    <input value={employerName} onChange={e => setEmployerName(e.target.value)} />
+                </div>
+                <div>
+                    <label>sick leave start date</label>
+                    <input type="date" value={sickLeaveStartDate} onChange={e => setSickLeaveStartDate(e.target.value)} />
+                </div>
+                <div>
+                    <label>sick leave end date</label>
+                    <input type="date" value={sickLeaveEndDate} onChange={e => setSickLeaveEndDate(e.target.value)} />
                 </div>
                 <button type="submit">Add</button>
             </form>
@@ -96,4 +106,4 @@ const NewHealthCheckEntryForm = (props: Props) => {
     );
 };
 
-export default NewHealthCheckEntryForm;
+export default NewOccupationalHealthcareEntryForm;

@@ -3,8 +3,8 @@ import { useParams } from "react-router-dom";
 import patients from "../../services/patients";
 import { Diagnosis, Entry, Patient } from "../../types";
 import Entries from "./Entries";
-import NewHealthCheckEntryForm from "./NewHealthCheckEntryForm";
 import Notification from "../Notification";
+import NewEntrySelector from "./NewEntrySelector";
 
 interface Props {
     diagnoses: Diagnosis[];
@@ -45,7 +45,7 @@ const PatientPage = (props: Props) => {
             
             <Notification notification={props.notification} />
 
-            <NewHealthCheckEntryForm patientId={patient.id} updateEntries={props.updateEntries} setNotification={props.setNotification} />
+            <NewEntrySelector patientId={patient.id} updateEntries={props.updateEntries} setNotification={props.setNotification} diagnoses={props.diagnoses} />
             <h3>Entries</h3>
             <Entries entries={patient.entries} diagnoses={props.diagnoses} />
         </div>
