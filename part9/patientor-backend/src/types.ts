@@ -47,6 +47,11 @@ export interface HospitalEntry extends BaseEntry{
 
 export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
 
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+export type EntryData = UnionOmit<Entry, 'id'>;
+
 export interface Patient {
     id: string,
     name: string,
