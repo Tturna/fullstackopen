@@ -2,33 +2,12 @@ import { useState, useEffect } from "react"
 import diaryService from "./services/diaryService";
 import { DiaryEntry } from "./types";
 import NewEntryForm from "./components/NewEntryForm";
-
-const Entry = ({ diaryEntry }: { diaryEntry: DiaryEntry }) => {
-  return(
-    <div>
-      <h3>{diaryEntry.date}</h3>
-      <p>Visibility: {diaryEntry.visibility}</p>
-      <p>Weather: {diaryEntry.weather}</p>
-    </div>
-  )
-}
-
-const Diary = ({ diaryEntries }: { diaryEntries: DiaryEntry[] }) => {
-  return(
-    <div>
-      <h2>Diary Entries</h2>
-      {
-        diaryEntries.map(de => (
-            <Entry key={de.id} diaryEntry={de} />
-          )
-        )
-      }
-    </div>
-  )
-}
+import Diary from "./components/Diary";
+import Notification from "./components/Notification";
 
 function App() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     diaryService.getAll()
@@ -49,7 +28,8 @@ function App() {
   return (
     <div>
       <h1>Flight Diary</h1>
-      <NewEntryForm addEntryState={handleAddEntryState} />
+      <Notification notification={notification}/>
+      <NewEntryForm addEntryState={handleAddEntryState} setNotification={setNotification} />
       <Diary diaryEntries={entries}/>
     </div>
   )

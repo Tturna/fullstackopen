@@ -1,8 +1,14 @@
 import { useState } from "react";
 import { DiaryEntry, NewDiaryEntry, Visibility, Weather } from "../types";
 import diaryService from "../services/diaryService";
+import axios from 'axios';
 
-const NewEntryForm = ({ addEntryState }: { addEntryState: ((arg0: DiaryEntry) => void)}) => {
+interface NewEntryFormProps {
+  addEntryState: ((arg0: DiaryEntry) => void),
+  setNotification: ((arg0: string) => void)
+}
+
+const NewEntryForm = (props: NewEntryFormProps) => {
   const [dateInput, setDateInput] = useState('');
   const [visibilityInput, setVisibilityInput] = useState('');
   const [weatherInput, setWeatherInput] = useState('');
@@ -21,10 +27,22 @@ const NewEntryForm = ({ addEntryState }: { addEntryState: ((arg0: DiaryEntry) =>
     diaryService.addEntry(newEntry)
     .then(response => {
         console.log(`Added entry: ${response}`);
-        addEntryState(response)
+        props.addEntryState(response)
+        props.setNotification(`Added entry for ${response.date}`);
+        setTimeout(() => {
+          props.setNotification('');
+        }, 5000);
     })
     .catch(error => {
-      console.log(error);
+      if (axios.isAxiosError(error)) {
+        console.log(error.response?.data);
+        props.setNotification(error.response?.data);
+        setTimeout(() => {
+          props.setNotification('');
+        }, 5000);
+      } else {
+        console.log(error);
+      }
     });
   }
 
