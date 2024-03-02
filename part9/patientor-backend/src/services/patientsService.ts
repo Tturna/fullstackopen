@@ -6,6 +6,10 @@ function getAll(): Patient[] {
     return data;
 }
 
+function getById(id: string): Patient | undefined {
+    return data.find(d => d.id === id);
+}
+
 function validatePatientData(patientData: unknown): PatientData {
     function isObject(data: unknown): data is object {
         return typeof data === 'object';
@@ -28,11 +32,18 @@ function validatePatientData(patientData: unknown): PatientData {
         return genders.includes(data);
     }
 
+    function isEntries(data: unknown[]): data is string[] {
+        if (data.length == 0) return true;
+
+        return data.every(e => isString(e));
+    }
+
     if ('name' in patientData &&
         'dateOfBirth' in patientData &&
         'ssn' in patientData &&
         'gender' in patientData &&
-        'occupation' in patientData
+        'occupation' in patientData &&
+        'entries' in patientData
     ) {
         if (!isString(patientData.name)) {
             throw new Error('Invalid name');
@@ -54,12 +65,17 @@ function validatePatientData(patientData: unknown): PatientData {
             throw new Error('Invalid occupation');
         }
 
+        if (!Array.isArray(patientData.entries) || !isEntries(patientData.entries)) {
+            throw new Error('Invalid entries');
+        }
+
         const validated: PatientData = {
             name: patientData.name,
             dateOfBirth: patientData.dateOfBirth,
             ssn: patientData.ssn,
             gender: patientData.gender,
-            occupation: patientData.occupation
+            occupation: patientData.occupation,
+            entries: patientData.entries
         };
 
         return validated;
@@ -79,4 +95,4 @@ function addPatient(patientData: PatientData): Patient {
     return newPatient;
 }
 
-export default { getAll, addPatient, validatePatientData };
+export default { getAll, getById, addPatient, validatePatientData };

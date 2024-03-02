@@ -10,6 +10,17 @@ router.get('/', (_req, res) => {
     res.json(safePatients);
 });
 
+router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    const result = patientsService.getById(id);
+
+    if (!result) {
+        res.sendStatus(404);
+    }
+
+    res.json(result);
+});
+
 router.post('/', (req, res) => {
     try {
         const validatedData = patientsService.validatePatientData(req.body);
