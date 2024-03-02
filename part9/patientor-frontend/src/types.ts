@@ -47,6 +47,8 @@ export interface HospitalEntry extends BaseEntry{
 
 export type Entry = HospitalEntry | OccupationalHealthcareEntry | HealthCheckEntry;
 
+export type EntryData = Omit<Entry, 'id'>;
+
 export enum Gender {
   Male = "male",
   Female = "female",

@@ -1,10 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import patients from "../../services/patients";
-import { Diagnosis, Patient } from "../../types";
+import { Diagnosis, Entry, Patient } from "../../types";
 import Entries from "./Entries";
+import NewHealthCheckEntryForm from "./NewHealthCheckEntryForm";
+import Notification from "../Notification";
 
-const PatientPage = ({ diagnoses }: { diagnoses: Diagnosis[]}) => {
+interface Props {
+    diagnoses: Diagnosis[];
+    updateEntries: (patientId:string, entry: Entry) => void;
+    notification: string,
+    setNotification: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const PatientPage = (props: Props) => {
     const [patient, setPatient] = useState<Patient>();
     const id = useParams().id as string;
     
@@ -16,7 +25,11 @@ const PatientPage = ({ diagnoses }: { diagnoses: Diagnosis[]}) => {
         .catch(error => {
             console.log(error);
         });
-    }, [id]);
+
+        // This is a hack to re-render the component when an entry is added
+        // pls don't judge
+        console.log(props.notification);
+    }, [id, props.notification]);
 
     if (!patient) {
         return <div>Loading...</div>;
@@ -29,9 +42,12 @@ const PatientPage = ({ diagnoses }: { diagnoses: Diagnosis[]}) => {
             <p>SSN: {patient.ssn}</p>
             <p>Occupation: {patient.occupation}</p>
             <p>Date of birth: {patient.dateOfBirth}</p>
+            
+            <Notification notification={props.notification} />
 
+            <NewHealthCheckEntryForm patientId={patient.id} updateEntries={props.updateEntries} setNotification={props.setNotification} />
             <h3>Entries</h3>
-            <Entries entries={patient.entries} diagnoses={diagnoses} />
+            <Entries entries={patient.entries} diagnoses={props.diagnoses} />
         </div>
     );
 };
