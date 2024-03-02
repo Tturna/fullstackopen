@@ -1,6 +1,6 @@
 import { v1 as uuid } from 'uuid';
 import data from "../../data/patients";
-import { Patient, PatientData, Gender } from "../types";
+import { Patient, PatientData, Gender, Entry } from "../types";
 
 function getAll(): Patient[] {
     return data;
@@ -32,10 +32,15 @@ function validatePatientData(patientData: unknown): PatientData {
         return genders.includes(data);
     }
 
-    function isEntries(data: unknown[]): data is string[] {
+    function isEntries(data: unknown[]): data is Entry[] {
         if (data.length == 0) return true;
 
-        return data.every(e => isString(e));
+        return data.every(e => {
+            if (!e) return false;
+            if (typeof e !== 'object') return false;
+            if (!('type' in e)) return false;
+            return isString(e.type);
+        });
     }
 
     if ('name' in patientData &&
