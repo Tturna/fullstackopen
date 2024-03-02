@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/', (_req, res) => {
     const diagnoses = diagnosesService.getAll();
-    res.json({ diagnoses });
+    res.json(diagnoses);
 });
 
 export default router;

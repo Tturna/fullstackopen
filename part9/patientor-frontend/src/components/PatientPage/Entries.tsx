@@ -1,14 +1,19 @@
-import { Entry } from "../../types";
+import { Diagnosis, Entry } from "../../types";
 
-const Entries = ({ entries }: { entries: Entry[]}) => {
+interface EntriesProps {
+    entries: Entry[],
+    diagnoses: Diagnosis[]
+}
+
+const Entries = (props: EntriesProps) => {
     return(
         <div>
-            {entries.map(e => (
+            {props.entries.map(e => (
                 <div key={e.id}>
                     <p>{e.date} <i>{e.description}</i></p>
                     <ul>
                         {e.diagnosisCodes?.map(dc => (
-                            <li key={dc}>{dc}</li>
+                            <li key={dc}>{dc} {props.diagnoses.find(d => d.code === dc)?.name}</li>
                         ))}
                     </ul>
                 </div>
