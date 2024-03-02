@@ -26,12 +26,13 @@ const NewEntryForm = (props: NewEntryFormProps) => {
 
     diaryService.addEntry(newEntry)
     .then(response => {
-        console.log(`Added entry: ${response}`);
-        props.addEntryState(response)
-        props.setNotification(`Added entry for ${response.date}`);
-        setTimeout(() => {
-          props.setNotification('');
-        }, 5000);
+      console.log('Added entry:');
+      console.log(response);
+      props.addEntryState(response)
+      props.setNotification(`Added entry for ${response.date}`);
+      setTimeout(() => {
+        props.setNotification('');
+      }, 5000);
     })
     .catch(error => {
       if (axios.isAxiosError(error)) {
@@ -52,15 +53,31 @@ const NewEntryForm = (props: NewEntryFormProps) => {
       <form onSubmit={handleSubmit}>
         <div>
           date
-          <input value={dateInput} onChange={({ target }) => setDateInput(target.value)} />
+          <input type="date" value={dateInput} onChange={({ target }) => setDateInput(target.value)} />
         </div>
         <div>
           visibility
-          <input value={visibilityInput} onChange={({ target }) => setVisibilityInput(target.value)} />
+          <input id="vis1" type="radio" name="visibilityGroup" onChange={() => setVisibilityInput('great')} />
+          <label>great</label>
+          <input id="vis2" type="radio" name="visibilityGroup" onChange={() => setVisibilityInput('good')} />
+          <label>good</label>
+          <input id="vis3" type="radio" name="visibilityGroup" onChange={() => setVisibilityInput('ok')} />
+          <label>ok</label>
+          <input id="vis4" type="radio" name="visibilityGroup" onChange={() => setVisibilityInput('poor')} />
+          <label>poor</label>
         </div>
         <div>
           weather
-          <input value={weatherInput} onChange={({ target }) => setWeatherInput(target.value)} />
+          <input id="wth1" type="radio" name="weatherGroup" onChange={() => setWeatherInput('sunny')} />
+          <label>sunny</label>
+          <input id="wth2" type="radio" name="weatherGroup" onChange={() => setWeatherInput('rainy')} />
+          <label>rainy</label>
+          <input id="wth3" type="radio" name="weatherGroup" onChange={() => setWeatherInput('cloudy')} />
+          <label>cloudy</label>
+          <input id="wth4" type="radio" name="weatherGroup" onChange={() => setWeatherInput('stormy')} />
+          <label>stormy</label>
+          <input id="wth5" type="radio" name="weatherGroup" onChange={() => setWeatherInput('windy')} />
+          <label>windy</label>
         </div>
         <div>
           comment
